@@ -15,9 +15,9 @@
  */
 package io.gravitee.management.service.notifiers.impl;
 
-import io.gravitee.management.model.api.ApiEntity;
 import io.gravitee.management.model.ApiModelEntity;
 import io.gravitee.management.model.PlanEntity;
+import io.gravitee.management.model.api.ApiEntity;
 import io.gravitee.management.service.EmailService;
 import io.gravitee.management.service.builder.EmailNotificationBuilder;
 import io.gravitee.management.service.notification.*;
@@ -81,6 +81,12 @@ public class EmailNotifierServiceImpl implements EmailNotifierService {
         else if (hook.equals(ApiHook.SUBSCRIPTION_ACCEPTED) || hook.equals(ApiHook.SUBSCRIPTION_NEW)) {
             return EmailNotificationBuilder.EmailTemplate.NEW_SUBSCRIPTION;
         }
+        else if (hook.equals(ApiHook.SUBSCRIPTION_PAUSED)) {
+            return EmailNotificationBuilder.EmailTemplate.PAUSE_SUBSCRIPTION;
+        }
+        else if (hook.equals(ApiHook.SUBSCRIPTION_RESUMED)) {
+            return EmailNotificationBuilder.EmailTemplate.RESUME_SUBSCRIPTION;
+        }
         else if (hook.equals(ApiHook.NEW_SUPPORT_TICKET)) {
             return EmailNotificationBuilder.EmailTemplate.SUPPORT_TICKET_NOTIFICATION;
         }
@@ -109,6 +115,12 @@ public class EmailNotifierServiceImpl implements EmailNotifierService {
         }
         else if (hook.equals(ApplicationHook.SUBSCRIPTION_CLOSED)) {
             return EmailNotificationBuilder.EmailTemplate.CLOSE_SUBSCRIPTION;
+        }
+        else if (hook.equals(ApplicationHook.SUBSCRIPTION_PAUSED)) {
+            return EmailNotificationBuilder.EmailTemplate.PAUSE_SUBSCRIPTION;
+        }
+        else if (hook.equals(ApplicationHook.SUBSCRIPTION_RESUMED)) {
+            return EmailNotificationBuilder.EmailTemplate.RESUME_SUBSCRIPTION;
         }
         else if (hook.equals(ApplicationHook.NEW_SUPPORT_TICKET)) {
             return EmailNotificationBuilder.EmailTemplate.SUPPORT_TICKET_NOTIFICATION;
@@ -194,6 +206,22 @@ public class EmailNotifierServiceImpl implements EmailNotifierService {
             if (api != null && plan != null) {
                 String apiName = api instanceof ApiModelEntity ? ((ApiModelEntity) api).getName() : ((ApiEntity) api).getName();
                 return "Your subscription to " + apiName + " with plan " + ((PlanEntity)plan).getName() + " has been closed";
+            }
+        }
+        else if (hook.equals(ApplicationHook.SUBSCRIPTION_PAUSED)) {
+            Object api = params.get(NotificationParamsBuilder.PARAM_API);
+            Object plan = params.get(NotificationParamsBuilder.PARAM_PLAN);
+            if (api != null && plan != null) {
+                String apiName = api instanceof ApiModelEntity ? ((ApiModelEntity) api).getName() : ((ApiEntity) api).getName();
+                return "Your subscription to " + apiName + " with plan " + ((PlanEntity)plan).getName() + " has been paused";
+            }
+        }
+        else if (hook.equals(ApplicationHook.SUBSCRIPTION_RESUMED)) {
+            Object api = params.get(NotificationParamsBuilder.PARAM_API);
+            Object plan = params.get(NotificationParamsBuilder.PARAM_PLAN);
+            if (api != null && plan != null) {
+                String apiName = api instanceof ApiModelEntity ? ((ApiModelEntity) api).getName() : ((ApiEntity) api).getName();
+                return "Your subscription to " + apiName + " with plan " + ((PlanEntity)plan).getName() + " has been resumed";
             }
         }
         else if (hook.equals(ApplicationHook.NEW_SUPPORT_TICKET)) {
